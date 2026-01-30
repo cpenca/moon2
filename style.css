@@ -1,0 +1,162 @@
+:root{
+  --blue: #5A6CB3;          /* sampled from your Open Call image */
+  --ink: rgba(255,255,255,.92);
+  --ink-soft: rgba(255,255,255,.78);
+  --ink-faint: rgba(255,255,255,.55);
+
+  --maxw: 980px;
+  --pad: clamp(18px, 4vw, 44px);
+
+  --radius: 22px;
+  --border: 2px solid rgba(255,255,255,.78);
+
+  --fs-base: clamp(16px, 1.2vw + 0.4rem, 19px);
+  --fs-hero: clamp(44px, 7vw, 110px);
+  --fs-h1: clamp(28px, 3.4vw, 44px);
+  --fs-nav: clamp(14px, 1.1vw + 0.25rem, 16px);
+}
+
+*{ box-sizing: border-box; }
+html, body{ height: 100%; margin: 0; }
+
+body{
+  font-family: "Helvetica Neue", Helvetica, Arial, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: var(--fs-base);
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--blue);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+  overflow-x: hidden;
+}
+
+/* === Moon background overlay === */
+body::before{
+  content:"";
+  position: fixed;
+  inset: 0;
+  background-image: url("moon_background.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: min(980px, 92vw);
+  opacity: 0.28;           /* tune this if you want it stronger */
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* subtle edge vignette to match the poster-y feel */
+body::after{
+  content:"";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(1200px 900px at 50% 20%, rgba(0,0,0,0.10), rgba(0,0,0,0.30) 75%, rgba(0,0,0,0.38));
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Keep everything above overlays */
+.site-header, .site-nav, main, footer { position: relative; z-index: 1; }
+
+/* === Layout wrapper === */
+.container{
+  width: min(var(--maxw), calc(100vw - (var(--pad) * 2)));
+  margin: 0 auto;
+  padding: 0;
+}
+
+/* === Header === */
+.site-header{
+  padding: var(--pad) 0 0;
+}
+
+.moon{
+  height: clamp(86px, 14vw, 140px);
+  width: auto;
+  display: block;
+  margin: 0 0 18px 0;
+  /* keep it crisp/minimal (no pulsing glow) */
+  filter: none;
+}
+
+/* Big Open-Call-ish title */
+.project-title{
+  font-size: var(--fs-hero);
+  line-height: 0.92;
+  letter-spacing: -0.02em;
+  font-weight: 300;
+  margin: 0 0 18px 0;
+  color: rgba(255,255,255,0.96);
+  max-width: 13ch; /* creates that tall poster stacking */
+}
+
+/* === Nav === */
+.site-nav{
+  width: min(var(--maxw), calc(100vw - (var(--pad) * 2)));
+  margin: 10px auto 26px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.site-nav a{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 18px;
+  border-radius: var(--radius);
+  border: var(--border);
+  color: rgba(255,255,255,0.92);
+  text-decoration: none;
+  font-size: var(--fs-nav);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  background: rgba(255,255,255,0.06);
+  transition: transform .15s ease, background .15s ease, color .15s ease, border-color .15s ease;
+}
+
+.site-nav a:hover{
+  transform: translateY(-1px);
+  background: rgba(255,255,255,0.14);
+  border-color: rgba(255,255,255,0.92);
+}
+
+.site-nav a[aria-current="page"]{ display: none; }
+
+/* === Main content === */
+main.container{
+  padding: 0 0 var(--pad);
+}
+
+h1{
+  font-size: var(--fs-h1);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  font-weight: 400;
+  margin: 12px 0 14px;
+  color: rgba(255,255,255,0.96);
+  max-width: 28ch;
+}
+
+p{
+  margin: 0 0 14px;
+  color: var(--ink-soft);
+  max-width: 70ch;
+}
+
+strong{ color: rgba(255,255,255,0.94); font-weight: 600; }
+em{ color: rgba(255,255,255,0.90); }
+
+a{
+  color: rgba(255,255,255,0.96);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+a:hover{ color: rgba(255,255,255,1); }
+
+/* === Small-screen adjustments === */
+@media (max-width: 640px){
+  .project-title{ max-width: 16ch; }
+  .site-nav a{ flex: 1 1 auto; }
+}
