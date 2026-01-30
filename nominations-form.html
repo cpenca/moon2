@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Nominations Form</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+
+  <style>
+    /* --- Page-specific styling to match the new Open Call look --- */
+
+    /* Exit link styled like a light UI control */
+    .exit-btn{
+      position: fixed;
+      top: 18px;
+      left: 18px;
+      z-index: 5;
+      text-decoration: none;
+      color: rgba(255,255,255,0.92);
+      border: 2px solid rgba(255,255,255,0.78);
+      background: rgba(255,255,255,0.06);
+      padding: 10px 14px;
+      border-radius: 18px;
+      font-weight: 600;
+      letter-spacing: .01em;
+      transition: transform .15s ease, background .15s ease, border-color .15s ease;
+    }
+    .exit-btn:hover{
+      transform: translateY(-1px);
+      background: rgba(255,255,255,0.14);
+      border-color: rgba(255,255,255,0.92);
+    }
+
+    /* Make the form area feel like a poster panel, but still airy */
+    .wizard{
+      margin-top: 6px;
+      width: min(760px, 100%);
+    }
+
+    .intro{
+      margin-top: 0;
+      color: rgba(255,255,255,0.78);
+      max-width: 65ch;
+    }
+
+    /* Hide honeypot visually but keep it in DOM */
+    .hp-wrap{
+      position: absolute;
+      left: -9999px;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+    }
+
+    /* Swap container keeps the message anchored where the form was */
+    .swap-wrap{
+      position: relative;
+      margin-top: 18px;
+      min-height: 520px; /* prevents jump when swapping panels */
+    }
+
+    /* Smooth swap animation */
+    .panel{
+      transition: opacity 220ms ease, transform 220ms ease;
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .panel.is-hidden{
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+    }
+
+    /* Overlap panels so there's no empty space */
+    #postSubmit{
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+    }
+
+    /* Form "card" to sit on the blue field */
+    .form-card{
+      width: min(760px, 100%);
+      border-radius: 22px;
+      border: 2px solid rgba(255,255,255,0.78);
+      background: rgba(255,255,255,0.06);
+      padding: clamp(16px, 2.6vw, 22px);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+
+    .q{
+      margin: 0 0 14px 0;
+    }
+
+    label{
+      display: block;
+      margin: 0 0 6px 0;
+      color: rgba(255,255,255,0.92);
+      font-weight: 600;
+      letter-spacing: .01em;
+    }
+
+    input, select, textarea{
+      width: 100%;
+      border-radius: 16px;
+      border: 2px solid rgba(255,255,255,0.55);
+      background: rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.95);
+      padding: 12px 14px;
+      font: inherit;
+      outline: none;
+      transition: border-color .15s ease, background .15s ease, transform .15s ease;
+    }
+
+    textarea{ min-height: 120px; resize: vertical; }
+
+    input::placeholder{ color: rgba(255,255,255,0.62); }
+
+    input:focus, select:focus, textarea:focus{
+      border-color: rgba(255,255,255,0.92);
+      background: rgba(255,255,255,0.16);
+    }
+
+    .controls{
+      margin-top: 10px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    /* Button style aligned with nav */
+    .btn{
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 18px;
+      border-radius: 22px;
+      border: 2px solid rgba(255,255,255,0.78);
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.92);
+      text-decoration: none;
+      font-weight: 600;
+      letter-spacing: .01em;
+      cursor: pointer;
+      transition: transform .15s ease, background .15s ease, border-color .15s ease, opacity .15s ease;
+    }
+    .btn:hover{
+      transform: translateY(-1px);
+      background: rgba(255,255,255,0.14);
+      border-color: rgba(255,255,255,0.92);
+    }
+    .btn:disabled{
+      opacity: .55;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Primary CTA feel */
+    .btn.cta{
+      background: rgba(255,255,255,0.18);
+    }
+
+    #result{
+      margin-top: 12px;
+      color: rgba(255,255,255,0.92);
+    }
+    .error{
+      border-left: 4px solid rgba(255,255,255,0.92);
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(0,0,0,0.18);
+    }
+    .success{
+      border-left: 4px solid rgba(255,255,255,0.92);
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.10);
+      margin: 0 0 12px 0;
+      color: rgba(255,255,255,0.96);
+      font-weight: 600;
+    }
+
+    /* Post-submit card */
+    .post-card{
+      width: min(760px, 100%);
+      padding: clamp(16px, 2.6vw, 22px);
+      border-radius: 22px;
+      border: 2px solid rgba(255,255,255,0.78);
+      background: rgba(255,255,255,0.06);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+
+    .post-actions{
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-start;
+      margin-top: 12px;
+    }
+
+    /* Mobile spacing */
+    @media (max-width: 640px){
+      .exit-btn{ top: 12px; left: 12px; }
+      .swap-wrap{ min-height: 560px; }
+    }
+  </style>
+</head>
+
+<body class="page-nominations-form">
+  <a class="exit-btn" href="nominations.html"
+     onclick="if (history.length>1){history.back(); return false;}">⟵ Exit</a>
+
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="index.html" aria-label="Moons for Miami">
+        <img src="moon3.png" alt="Moon" class="brand-moon moon-bounce" />
+        <span class="brand-text">, Miami</span>
+      </a>
+      <div class="project-title">Moons for Miami: Naming La Luna</div>
+    </div>
+  </header>
+
+  <nav class="site-nav" aria-label="Primary">
+    <a href="index.html">About</a>
+    <a href="nominations.html">Nominations</a>
+  </nav>
+
+  <main class="container">
+    <h1>Nominations</h1>
+    <p class="intro">Pick a month (or Blue Moon) and submit your nomination.</p>
+
+    <div class="wizard">
+      <!-- Honeypot -->
+      <div class="hp-wrap" aria-hidden="true">
+        <label>Website
+          <input type="text" id="website" name="website" autocomplete="off" tabindex="-1">
+        </label>
+      </div>
+
+      <div class="swap-wrap" id="swapWrap">
+        <!-- Form panel -->
+        <form id="nominationForm" class="panel form-card" onsubmit="submitForm(event)">
+          <div class="q">
+            <label for="month">Month</label>
+            <select id="month" required>
+              <option value="" disabled selected>Select a month</option>
+              <option>January</option>
+              <option>February</option>
+              <option>March</option>
+              <option>April</option>
+              <option>May</option>
+              <option>June</option>
+              <option>July</option>
+              <option>August</option>
+              <option>September</option>
+              <option>October</option>
+              <option>November</option>
+              <option>December</option>
+              <option>Blue Moon</option>
+            </select>
+          </div>
+
+          <div class="q">
+            <label for="name">Your name</label>
+            <input id="name" type="text" placeholder="Optional" autocomplete="name">
+          </div>
+
+          <div class="q">
+            <label for="zip">ZIP code</label>
+            <input id="zip" type="text" required placeholder="example 33133" autocomplete="postal-code">
+          </div>
+
+          <div class="q">
+            <label for="email">Email address</label>
+            <input id="email" type="text" required autocomplete="email">
+          </div>
+
+          <div class="q">
+            <label for="moonName">Moon name suggestion</label>
+            <input id="moonName" type="text" required>
+          </div>
+
+          <div class="q">
+            <label for="explanation">Brief explanation</label>
+            <textarea id="explanation" required></textarea>
+          </div>
+
+          <div class="controls">
+            <button class="btn cta" id="submitBtn" type="submit">Submit</button>
+          </div>
+
+          <div id="result"></div>
+        </form>
+
+        <!-- Post-submit panel -->
+        <div id="postSubmit" class="panel is-hidden" aria-hidden="true">
+          <div class="post-card">
+            <div id="postMessage"></div>
+            <div class="post-actions">
+              <a class="btn" href="nominations.html">Exit</a>
+              <button class="btn" type="button" onclick="submitAnother()">Submit another nomination</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+<script>
+  var FORM_ENDPOINT =
+    'https://script.google.com/macros/s/AKfycbwEOkhxRFzDQKSuztQG-qAVxzaFdhcjlGWTxt44TVq6Pmrk98oOVe5ut4Tm_5eLeNt68A/exec';
+
+  var startTime = Date.now();
+
+  function swapViews(showPost) {
+    var form = document.getElementById('nominationForm');
+    var post = document.getElementById('postSubmit');
+
+    if (showPost) {
+      form.classList.add('is-hidden');
+      form.setAttribute('aria-hidden', 'true');
+      post.classList.remove('is-hidden');
+      post.setAttribute('aria-hidden', 'false');
+    } else {
+      post.classList.add('is-hidden');
+      post.setAttribute('aria-hidden', 'true');
+      form.classList.remove('is-hidden');
+      form.setAttribute('aria-hidden', 'false');
+    }
+  }
+
+  function submitForm(e) {
+    e.preventDefault();
+
+    var website = document.getElementById('website').value || '';
+    var elapsedMs = Date.now() - startTime;
+
+    var month = (document.getElementById('month').value || '').trim();
+    var name = (document.getElementById('name').value || '').trim();
+    var zip = (document.getElementById('zip').value || '').trim();
+    var email = (document.getElementById('email').value || '').trim();
+    var moonName = (document.getElementById('moonName').value || '').trim();
+    var explanation = (document.getElementById('explanation').value || '').trim();
+
+    if (!month || !zip || !email || !moonName || !explanation) {
+      document.getElementById('result').innerHTML =
+        '<div class="error">❌ Please complete all required fields.</div>';
+      return;
+    }
+
+    // Remember name/email between submissions
+    try {
+      localStorage.setItem('moon_nom_name', name);
+      localStorage.setItem('moon_nom_email', email);
+    } catch (err) {}
+
+    var payload = {
+      website: website,
+      elapsedMs: elapsedMs,
+      name: name,
+      zip: zip,
+      email: email,
+      month: month,
+      moonName: moonName,
+      explanation: explanation
+    };
+
+    var submitBtn = document.getElementById('submitBtn');
+    var resultEl = document.getElementById('result');
+
+    submitBtn.disabled = true;
+    resultEl.innerHTML = '';
+
+    fetch(FORM_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload),
+      mode: 'no-cors'
+    })
+    .then(function () {
+      document.getElementById('postMessage').innerHTML =
+        '<div class="success">✅ Thanks! Your nomination was sent.</div>';
+      swapViews(true);
+    })
+    .catch(function(err){
+      console.error(err);
+      resultEl.innerHTML =
+        '<div class="error">❌ Submission failed: ' + String(err) + '</div>';
+    })
+    .finally(function(){
+      submitBtn.disabled = false;
+    });
+  }
+
+  function submitAnother() {
+    var form = document.getElementById('nominationForm');
+    form.reset();
+
+    // Restore remembered values
+    try {
+      var savedName = localStorage.getItem('moon_nom_name') || '';
+      var savedEmail = localStorage.getItem('moon_nom_email') || '';
+      document.getElementById('name').value = savedName;
+      document.getElementById('email').value = savedEmail;
+    } catch (err) {}
+
+    // Ensure month resets to placeholder
+    document.getElementById('month').value = '';
+
+    document.getElementById('result').innerHTML = '';
+    startTime = Date.now();
+    swapViews(false);
+
+    setTimeout(function(){ document.getElementById('month').focus(); }, 240);
+  }
+
+  // Prefill saved name/email on load
+  (function initPrefill(){
+    try {
+      var savedName = localStorage.getItem('moon_nom_name') || '';
+      var savedEmail = localStorage.getItem('moon_nom_email') || '';
+      if (savedName) document.getElementById('name').value = savedName;
+      if (savedEmail) document.getElementById('email').value = savedEmail;
+    } catch (err) {}
+  })();
+</script>
+</body>
+</html>
