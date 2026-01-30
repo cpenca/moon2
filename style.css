@@ -121,7 +121,7 @@ body::after{
   border-color: rgba(255,255,255,0.92);
 }
 
-.site-nav a[aria-current="page"]{ display: none; }
+
 
 /* === Main content === */
 main.container{
