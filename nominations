@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Nominations</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body class="page-nominations">
+  <header class="site-header">
+    <div class="container">
+      <!-- Moon + ", Miami" lockup (moon bounces; text stays still) -->
+      <a class="brand" href="index.html" aria-label="Moons for Miami">
+        <img src="moon3.png" alt="Moon" class="brand-moon moon-bounce" />
+        <span class="brand-text">, Miami</span>
+      </a>
+
+      <div class="project-title">Moons for Miami: Naming La Luna</div>
+    </div>
+  </header>
+
+  <!-- Nav: only two buttons now -->
+  <nav class="site-nav" aria-label="Primary">
+    <a href="index.html">About</a>
+    <a href="nominations.html" aria-current="page">Nominations</a>
+  </nav>
+
+  <main class="container">
+    <h1>Nominations</h1>
+
+    <p><strong>Nominations will be open February 1st and close February 28th</strong></p>
+
+    <p>
+      Ready to suggest names for each month’s full moon? Tap the button below to start.
+      You can select the month you wish to name and tell us why you think that name is appropriate.
+      Feel free to submit as many nominations as you wish.
+      And don't forget about the "blue moon", which occurs whenever a month has two full moons.
+      The next blue moon is May 31st, 2026!
+    </p>
+
+    <div class="cta-wrap">
+      <a class="btn cta" href="nominations-form.html">Start Nominations</a>
+    </div>
+  </main>
+</body>
+</html>
